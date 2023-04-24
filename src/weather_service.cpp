@@ -1,23 +1,27 @@
-#include <iostream>
-#include <cmath>
-#include <fstream>
-#include <string>
-
-#define TEMPERATURE_IIO_PATH "/sys/bus/iio/devices/iio:device0/in_temp_input"
-#define PRESSURE_IIO_PATH "/sys/bus/iio/devices/iio:device0/in_pressure_input"
+#include "weather_service.hpp"
 #define LOCAL_ALTITUDE 685  // Location height relative to sea level
 
-class WeatherStation {
- public:
-	WeatherStation(float station_altitude) : station_altitude_(station_altitude) {}
-  float GetTemperature();
-  float GetPressure();
- private:
-  float station_altitude_;
-  std::string ReadLineFromFile(const char *filename);
-  float ConvertToRelativePressure(float pressure, float height, float temperature);  
-};
+WeatherStation::WeatherStation(float station_altitude) {
+  station_altitude_ = station_altitude;
+  std::cout << "Weather Station initialized. Altitude: " << station_altitude_ << " m" << std::endl;
+}
 
+void WeatherStation::RegisterObserver(Observer *observer) {
+  std::cout << "Registering new observer: " << observer << std::endl;
+  observers_.push_back(observer);
+}
+
+void WeatherStation::RemoveObserver(Observer *observer) {
+  std::cout << "Removing observer" << std::endl;
+  
+}
+
+void WeatherStation::NotifyObservers() {
+  std::cout << "Notifying observers" << std::endl;
+  for (Observer *obs : observers_) {
+    obs->update(temperature_, humidity_, pressure_);
+  }
+}
 
 std::string WeatherStation::ReadLineFromFile(const char *filename) {
   std::ifstream file(filename);
@@ -31,6 +35,13 @@ std::string WeatherStation::ReadLineFromFile(const char *filename) {
     std::cout << "Error opening file" << std::endl;
     return std::string("Error");
   }
+}
+
+void WeatherStation::UpdateStation() {
+  temperature_ = this->GetTemperature();
+  pressure_ = this->GetPressure();
+  humidity_ = 0.0;
+  this->NotifyObservers();
 }
 
 float WeatherStation::ConvertToRelativePressure(float pressure, float height, float temperature) {
@@ -50,13 +61,4 @@ float WeatherStation::GetPressure() {
   float temperature = this->GetTemperature();
   float rel_pressure = this->ConvertToRelativePressure(abs_pressure, this->station_altitude_, temperature);
   return rel_pressure;
-}
-
-int main() {
-  WeatherStation *ws = new WeatherStation(LOCAL_ALTITUDE);
-  float temp = ws->GetTemperature();
-  std::cout << "Temperature C: " << temp << std::endl;
-  float pressure = ws->GetPressure();
-  std::cout << "Pressure hPa: " << pressure << std::endl;
-  return 0;
 }

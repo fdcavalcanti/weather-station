@@ -13,7 +13,7 @@ void WeatherStation::RegisterObserver(Observer *observer) {
 
 void WeatherStation::RemoveObserver(Observer *observer) {
   std::cout << "Removing observer" << std::endl;
-  
+
 }
 
 void WeatherStation::NotifyObservers() {

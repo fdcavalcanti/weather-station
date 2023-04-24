@@ -27,7 +27,7 @@ class WeatherStation : public Subject {
   float temperature_;
   float humidity_;
   float pressure_;
-  float ConvertToRelativePressure(float pressure, float height, float temperature);  
+  float ConvertToRelativePressure(float pressure, float height, float temperature);
   std::string ReadLineFromFile(const char *filename);
 };
 

@@ -8,11 +8,16 @@
 
 class Client : public Observer {
   public:
+    /*
+     * Generic client which extends Observer.
+     * This could be any user implementation that requires data
+     * from the station.
+     */
     Client(const char* name, WeatherStation* station);
     ~Client();
     void update(float temperature, float humidity, float pressure) override;
     void Display();
-    std::string name;
+    std::string client_name;
  private:
     float temperature_;
     float humidity_;

@@ -2,7 +2,7 @@
 #include "client.hpp"
 
 Client::Client(const char* name, WeatherStation* station) {
-  name = name;
+  client_name = std::string(name);
   station_ = station;
   station_->RegisterObserver(this);
 }
@@ -19,5 +19,5 @@ void Client::update(float temperature, float humidity, float pressure) {
 }
 
 void Client::Display() {
-  std::cout << name << ": " << temperature_ << ", " << pressure_ << std::endl;
+  std::cout << client_name << ": " << temperature_ << ", " << pressure_ << std::endl;
 }

@@ -1,6 +1,6 @@
 // Filipe Cavalcanti 2023
-#ifndef OBSERVER_HPP_
-#define OBSERVER_HPP_
+#ifndef SRC_OBSERVER_HPP_
+#define SRC_OBSERVER_HPP_
 
 class Observer {
  public:
@@ -11,4 +11,4 @@ class Observer {
    virtual ~Observer() = default;
 };
 
-#endif  // OBSERVER_HPP_
+#endif  // SRC_OBSERVER_HPP_

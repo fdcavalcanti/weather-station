@@ -13,7 +13,13 @@ void WeatherStation::RegisterObserver(Observer *observer) {
 
 void WeatherStation::RemoveObserver(Observer *observer) {
   std::cout << "Removing observer" << std::endl;
-
+  auto position = std::find(observers_.begin(), observers_.end(), observer);
+  if (position != observers_.end()) {
+    observers_.erase(position);
+  }
+  else {
+    std::cout << "Observer can not be removed." << std::endl;
+  }
 }
 
 void WeatherStation::NotifyObservers() {

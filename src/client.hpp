@@ -4,12 +4,12 @@
 #include <string>
 #include <iostream>
 #include "observer.hpp"
+#include "weather_service.hpp"
 
 class Client : public Observer {
   public:
-    Client(const char* name, WeatherStation *ws) : name(name), station_(ws) {
-      station_->RegisterObserver(this);
-    }
+    Client(const char* name, WeatherStation* station);
+    ~Client();
     void update(float temperature, float humidity, float pressure) override;
     void Display();
     std::string name;
@@ -17,7 +17,7 @@ class Client : public Observer {
     float temperature_;
     float humidity_;
     float pressure_;
-    WeatherStation *station_;
+    WeatherStation* station_;
 };
 
 #endif  // SRC_CLIENT_HPP_

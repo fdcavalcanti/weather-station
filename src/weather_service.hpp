@@ -1,10 +1,11 @@
-#ifndef WEATHER_SERVICE_HPP_
-#define WEATHER_SERVICE_HPP_
+#ifndef SRC_WEATHER_SERVICE_HPP_
+#define SRC_WEATHER_SERVICE_HPP_
 #include <iostream>
 #include <cmath>
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "observer.hpp"
 #include "subject.hpp"
 
@@ -31,4 +32,4 @@ class WeatherStation : public Subject {
   std::string ReadLineFromFile(const char *filename);
 };
 
-#endif  // WEATHER_SERVICE_HPP_
+#endif  // SRC_WEATHER_SERVICE_HPP_

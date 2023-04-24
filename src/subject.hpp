@@ -1,6 +1,6 @@
 // Filipe Cavalcanti 2023
-#ifndef SUBJECT_HPP_
-#define SUBJECT_HPP_
+#ifndef SRC_SUBJECT_HPP_
+#define SRC_SUBJECT_HPP_
 #include "observer.hpp"
 
 class Subject  {
@@ -21,4 +21,4 @@ class Subject  {
 };
 
 
-#endif  // SUBJECT_HPP_
+#endif  // SRC_SUBJECT_HPP_

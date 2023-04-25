@@ -18,6 +18,8 @@ void Client::update(float temperature, float humidity, float pressure) {
   this->Display();
 }
 
-void Client::Display() {
+std::string Client::Display() {
   std::cout << client_name << ": " << temperature_ << ", " << pressure_ << std::endl;
+  std::string ret =  std::to_string(temperature_) + ", " + std::to_string(pressure_);
+  return ret;
 }

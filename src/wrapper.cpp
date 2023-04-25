@@ -9,11 +9,16 @@ void WrapperUpdateStation(WeatherStation* station) {
   station->UpdateStation();
 }
 
-Client* WrapperClient(const char* name, WeatherStation* station) {
+Client* WrapperClient(char* name, WeatherStation* station) {
   Client* client = new Client(name, station);
   return client;
 }
 
 void WrapperDeleteClient(Client* client) {
   delete client;
+}
+
+void WrapperDisplayClient(Client* client, char* buffer) {
+  std::string data = client->Display();
+  strncpy(buffer, data.c_str(), 30);
 }

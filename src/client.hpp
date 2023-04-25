@@ -16,7 +16,7 @@ class Client : public Observer {
     Client(const char* name, WeatherStation* station);
     ~Client();
     void update(float temperature, float humidity, float pressure) override;
-    void Display();
+    std::string Display();
     std::string client_name;
  private:
     float temperature_;

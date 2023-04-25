@@ -1,3 +1,4 @@
+// Filipe Cavalcanti 2023
 #ifndef SRC_WEATHER_SERVICE_HPP_
 #define SRC_WEATHER_SERVICE_HPP_
 #include <iostream>
@@ -14,7 +15,7 @@
 
 class WeatherStation : public Subject {
  public:
-  WeatherStation(float station_altitude);
+  explicit WeatherStation(float station_altitude);
   ~WeatherStation() = default;
   void RegisterObserver(Observer *observer) override;
   void RemoveObserver(Observer *observer) override;
@@ -28,7 +29,8 @@ class WeatherStation : public Subject {
   float temperature_;
   float humidity_;
   float pressure_;
-  float ConvertToRelativePressure(float pressure, float height, float temperature);
+  float ConvertToRelativePressure(float pressure, float height,
+                                  float temperature);
   std::string ReadLineFromFile(const char *filename);
 };
 

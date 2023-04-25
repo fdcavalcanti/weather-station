@@ -3,4 +3,4 @@ file (GLOB station_files
     *.hpp
 )
 
-add_library(weather_station STATIC ${station_files})
+add_library(weather_station SHARED ${station_files})

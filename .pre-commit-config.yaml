@@ -9,6 +9,12 @@ repos:
 -   repo: https://github.com/pocc/pre-commit-hooks
     rev: v1.3.5
     hooks:
+    -   id: clang-format
+        args: [--style=Google, -i]
     -   id: cppcheck
     -   id: cpplint
         args: ['--filter=-legal/copyright']
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black

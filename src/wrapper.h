@@ -3,10 +3,10 @@
 #include <string.h>
 
 #ifdef __cplusplus
-#include "weather_service.hpp"
 #include "client.hpp"
+#include "weather_service.hpp"
 extern "C" {
-#endif  
+#endif
 
 WeatherStation* WrapperWeatherStation(float station_altitude);
 void WrapperUpdateStation(WeatherStation* station);

@@ -3,14 +3,17 @@
 
 #ifdef __cplusplus
 #include "weather_service.hpp"
-
+#include "client.hpp"
 extern "C" {
-  WeatherStation* weather_station_create(float station_altitude) {
-    WeatherStation* station = new WeatherStation(station_altitude);
-    return station;
-  }
-}
+#endif  
 
+WeatherStation* WrapperWeatherStation(float station_altitude);
+void WrapperUpdateStation(WeatherStation* station);
+Client* WrapperClient(const char* name, WeatherStation* station);
+void WrapperDeleteClient(Client* client);
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif  // SRC_WRAPPER_H_

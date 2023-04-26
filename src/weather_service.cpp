@@ -52,11 +52,11 @@ void WeatherStation::UpdateStation() {
   this->NotifyObservers();
 }
 
-float WeatherStation::ConvertToRelativePressure(float pressure, float height,
+float WeatherStation::ConvertToRelativePressure(float pressure, float altitude,
                                                 float temperature) {
   float rel_pres =
       pressure *
-      pow(1 - (0.0065 * height) / (temperature + 0.0065 * height + 273.15),
+      pow(1 - (0.0065 * altitude) / (temperature + 0.0065 * altitude + 273.15),
           -5.257);
   return rel_pres;
 }
@@ -84,6 +84,6 @@ float WeatherStation::GetPressure() {
   }
   float temperature = this->GetTemperature();
   float rel_pressure = this->ConvertToRelativePressure(
-      abs_pressure, this->station_altitude_, temperature);
+      abs_pressure, station_altitude_, temperature);
   return rel_pressure;
 }

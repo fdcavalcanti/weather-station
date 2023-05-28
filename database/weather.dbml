@@ -1,0 +1,10 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table weather_log {
+  measurement_id integer [primary key, increment]
+  datetime timestamp 
+  temperature float
+  pressure float
+  humidity float
+}

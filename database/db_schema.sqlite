@@ -1,0 +1,7 @@
+CREATE TABLE weather_log (
+  measurement_id INTEGER PRIMARY KEY,
+  datetime TEXT,
+  temperature REAL,
+  pressure REAL,
+  humidity REAL
+);

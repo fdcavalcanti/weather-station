@@ -51,19 +51,21 @@ def add_reading_to_database(database: os.PathLike, meas: Measurement) -> None:
 
     Returns:
         None
-    """    
-    conn = sqlite3.connect(database)
-    conn.execute(f"INSERT INTO weather_log (datetime,temperature,pressure,humidity) \
-        VALUES ({meas.timestamp}, {meas.temperature}, {meas.pressure}, {meas.humidity})")
-    conn.commit()
-    conn.close()
+    """
+    db = sqlite3.connect(database)
+    command = f"INSERT INTO weather_log (datetime,temperature,pressure,humidity) \
+    VALUES (?,?,?,?);"
+    cur = db.cursor()
+    cur.execute(command, (meas.timestamp, meas.temperature, meas.pressure, meas.humidity))
+    db.commit()
+    db.close()
 
 
-# if __name__ == "__main__":
-    # db_path = "/home/rasp/weather-station/database/station.db"
-    # try:
-    #     db_path = create_database("/home/rasp/weather-station/database/db_schema.sqlite", "station")
-    # except FileExistsError:
-    #     pass
-    # aaa = Measurement("12342003030", 29.5, 1009.3, 70.1)
-    # add_reading_to_database(db_path, aaa)
+#if __name__ == "__main__":
+    #db_path = "/home/rasp/weather-station/database/station.db"
+    #try:
+    #    db_path = create_database("/home/rasp/weather-station/database/db_schema.sqlite", "station")
+    #except FileExistsError:
+    #    pass
+    #aaa = Measurement("12342003030", 29.5, 1009.3, 70.1)
+    #add_reading_to_database(db_path, aaa)

@@ -4,8 +4,9 @@ import datetime
 import ctypes
 import os
 
-from database.database import add_reading_to_database, create_database
+from database.database import add_reading_to_database, create_database, Measurement
 
+SAMPLE_INTEVAL_S = 900
 LOCAL_ALTITUDE = 685
 DB_PATH = Path.home() / "weather-station" / "database" / "station.db"
 STATION_SO_PATH = Path.home() / "weather-station" / "build" / "src" / "libweather_station.so"
@@ -23,19 +24,23 @@ CLIENT = STATION_LIB.WrapperClient("Rasp", WEATHER_STATION)
 
 
 def read_station_data():
-    buffer = ctypes.create_string_buffer(30)
-    timestamp = datetime.datetime.now().strftime("%y%m%d-%H:%M:%S")
-    STATION_LIB.WrapperDisplayClient(CLIENT, buffer)
-    data = buffer.value.decode().split(",")
-    temperature, pressure, humidity = data[0], data[1], 0
-    print(f"{timestamp} -> Temperature: {temperature} | Pressure: {pressure} | Humidity: {humidity}")
-    return timestamp, temperature, pressure, humidity
+    cbuffer = ctypes.create_string_buffer(30)
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    STATION_LIB.WrapperDisplayClient(CLIENT, cbuffer)
+    data = cbuffer.value.decode().split(",")
+    meas = Measurement(timestamp, float(data[0]), float(data[1]), float(0))
+    print(f"{meas.timestamp} -> Temperature: {meas.temperature} | Pressure: {meas.pressure} | Humidity: {meas.humidity}")
+    return meas
 
 
 if __name__ == "__main__":
     # Register this script as a client
     print("Starting Weather Logging")
+    print(f"DB: {DB_PATH}")
+
     while True:
-        time.sleep(1)
+        time.sleep(SAMPLE_INTERVAL_S)
         STATION_LIB.WrapperUpdateStation(WEATHER_STATION)
-        data = read_station_data()
+        meas = read_station_data()
+        add_reading_to_database(DB_PATH, meas)
+

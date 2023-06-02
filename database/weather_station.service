@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather Station serivce
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+User=rasp
+ExecStart=/home/rasp/weather-station/build/server
+
+[Install]
+WantedBy=multi-user.target
+

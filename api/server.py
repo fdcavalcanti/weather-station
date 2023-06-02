@@ -19,7 +19,7 @@ app = FastAPI()
 
 async def station_update():
     while True:
-        await asyncio.sleep(10)
+        await asyncio.sleep(900)
         station_lib.WrapperUpdateStation(station)
 
 @app.on_event('startup')

@@ -1,5 +1,7 @@
 import ctypes
+import asyncio
 import os
+import time
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 
@@ -14,6 +16,15 @@ station_lib.WrapperUpdateStation(station)
 clients = {}
 
 app = FastAPI()
+
+async def station_update():
+    while True:
+        await asyncio.sleep(10)
+        station_lib.WrapperUpdateStation(station)
+
+@app.on_event('startup')
+async def app_startup():
+    asyncio.create_task(station_update())
 
 
 @app.get("/")
@@ -48,3 +59,4 @@ def display_client_temperature(client: int):
     data = buffer.value.decode()
     temperature, pressure = data.split(",")[0], data.split(",")[1]
     return {"client": client, "temperature C": temperature, "pressure hPa": pressure}
+

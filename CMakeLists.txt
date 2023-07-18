@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project (WeatherStation C CXX)
 
+# add_definitions(-DBMP280_DEVICE_0)
 set (CMAKE_CXX_FLAGS  "-Wall -std=c++17 -O0 -fpic -fno-unwind-tables -Wnon-virtual-dtor -fno-rtti")
 add_subdirectory(src)
 file (GLOB main

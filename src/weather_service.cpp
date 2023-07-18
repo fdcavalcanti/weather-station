@@ -62,7 +62,7 @@ float WeatherStation::ConvertToRelativePressure(float pressure, float altitude,
 }
 
 float WeatherStation::GetTemperature() {
-  std::string raw_temp = this->ReadLineFromFile(TEMPERATURE_IIO_PATH);
+  std::string raw_temp = this->ReadLineFromFile(iio_temperature_.c_str());
   float temperature_c;
   try {
     temperature_c = std::stof(raw_temp) / 1000;
@@ -74,7 +74,7 @@ float WeatherStation::GetTemperature() {
 }
 
 float WeatherStation::GetPressure() {
-  std::string raw_pressure = this->ReadLineFromFile(PRESSURE_IIO_PATH);
+  std::string raw_pressure = this->ReadLineFromFile(iio_pressure_.c_str());
   float abs_pressure;
   try {
     abs_pressure = std::stof(raw_pressure) * 10;

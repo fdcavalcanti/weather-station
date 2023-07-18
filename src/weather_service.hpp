@@ -7,11 +7,9 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <filesystem>
 #include "observer.hpp"
 #include "subject.hpp"
-
-#define TEMPERATURE_IIO_PATH "/sys/bus/iio/devices/iio:device0/in_temp_input"
-#define PRESSURE_IIO_PATH "/sys/bus/iio/devices/iio:device0/in_pressure_input"
 
 class WeatherStation : public Subject {
  public:
@@ -24,6 +22,9 @@ class WeatherStation : public Subject {
   float GetTemperature();
   float GetPressure();
  private:
+  const std::filesystem::path iio_path_ = "/sys/bus/iio/devices/";
+  const std::filesystem::path iio_temperature_ = iio_path_ / "iio:device1/in_temp_input";
+  const std::filesystem::path iio_pressure_ = iio_path_ / "iio:device1/in_pressure_input";
   std::vector<Observer*> observers_;
   float station_altitude_;
   float temperature_;

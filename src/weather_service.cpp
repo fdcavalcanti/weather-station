@@ -7,6 +7,7 @@ WeatherStation::WeatherStation(float station_altitude) {
   temperature_dht22_ = 0.0;
   humidity_ = 0.0;
   pressure_ = 0.0;
+  current_weather_data_ = {0};
   std::cout << "Weather Station initialized. Altitude: " << station_altitude_
             << " m" << std::endl;
 }

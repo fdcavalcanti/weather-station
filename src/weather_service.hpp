@@ -13,6 +13,13 @@
 
 enum Sensor {DHT22, BMP280};
 
+struct StationWeatherData {
+  float temperature_dht22;
+  float temperature_bmp280;
+  float relative_pressure;
+  float relative_humidity;
+};
+
 class WeatherStation : public Subject {
  public:
   explicit WeatherStation(float station_altitude);
@@ -43,6 +50,7 @@ class WeatherStation : public Subject {
   float temperature_dht22_;
   float humidity_;
   float pressure_;
+  StationWeatherData current_weather_data_;
   float ConvertToRelativePressure(float pressure, float altitude,
                                   float temperature);
   std::string ReadLineFromFile(const char *filename);

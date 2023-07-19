@@ -6,7 +6,7 @@ import os
 
 from database.database import add_reading_to_database, create_database, Measurement
 
-SAMPLE_INTEVAL_S = 900
+SAMPLE_INTERVAL_S = 900
 LOCAL_ALTITUDE = 685
 DB_PATH = Path.home() / "weather-station" / "database" / "station.db"
 STATION_SO_PATH = Path.home() / "weather-station" / "build" / "src" / "libweather_station.so"
@@ -28,7 +28,7 @@ def read_station_data():
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     STATION_LIB.WrapperDisplayClient(CLIENT, cbuffer)
     data = cbuffer.value.decode().split(",")
-    meas = Measurement(timestamp, float(data[0]), float(data[1]), float(0))
+    meas = Measurement(timestamp, float(data[0]), float(data[1]), float(data[2]))
     print(f"{meas.timestamp} -> Temperature: {meas.temperature} | Pressure: {meas.pressure} | Humidity: {meas.humidity}")
     return meas
 
@@ -39,8 +39,7 @@ if __name__ == "__main__":
     print(f"DB: {DB_PATH}")
 
     while True:
-        time.sleep(SAMPLE_INTERVAL_S)
         STATION_LIB.WrapperUpdateStation(WEATHER_STATION)
         meas = read_station_data()
         add_reading_to_database(DB_PATH, meas)
-
+        time.sleep(10)

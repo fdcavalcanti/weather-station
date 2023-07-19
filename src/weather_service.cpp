@@ -3,7 +3,8 @@
 
 WeatherStation::WeatherStation(float station_altitude) {
   station_altitude_ = station_altitude;
-  temperature_ = 0.0;
+  temperature_bmp280_ = 0.0;
+  temperature_dht22_ = 0.0;
   humidity_ = 0.0;
   pressure_ = 0.0;
   std::cout << "Weather Station initialized. Altitude: " << station_altitude_
@@ -28,7 +29,7 @@ void WeatherStation::RemoveObserver(Observer *observer) {
 void WeatherStation::NotifyObservers() {
   std::cout << "Notifying observers" << std::endl;
   for (Observer *obs : observers_) {
-    obs->update(temperature_, humidity_, pressure_);
+    obs->update(temperature_bmp280_, humidity_, pressure_);
   }
 }
 
@@ -46,12 +47,17 @@ std::string WeatherStation::ReadLineFromFile(const char *filename) {
 }
 
 void WeatherStation::UpdateStation() {
-  temperature_ = this->GetTemperature();
+  float temperature_dht22 = this->GetTemperature(DHT22);
+  temperature_bmp280_ = this->GetTemperature(BMP280);
   pressure_ = this->GetPressure();
   float humidity = this->GetHumidity();
   /* This check is necessary due to bad sensor returns. */
   if (static_cast<int>(humidity) != 0)
     humidity_ = humidity;
+
+  if (static_cast<int>(temperature_dht22) != 0)
+    temperature_dht22_ = temperature_dht22;
+
   this->NotifyObservers();
 }
 
@@ -64,15 +70,23 @@ float WeatherStation::ConvertToRelativePressure(float pressure, float altitude,
   return rel_pres;
 }
 
-float WeatherStation::GetTemperature() {
-  std::string raw_temp = this->ReadLineFromFile(iio_temperature_.c_str());
+float WeatherStation::GetTemperature(Sensor sensor) {
   float temperature_c;
+  std::string raw_temp;
+
+  if (sensor == BMP280) {
+    raw_temp = this->ReadLineFromFile(iio_temperature_bmp280_.c_str());
+  } else {
+    raw_temp = this->ReadLineFromFile(iio_temperature_dht22_.c_str());
+  }
+
   try {
-    temperature_c = std::stof(raw_temp) / 1000;
+    temperature_c = std::stof(raw_temp) / 1000.0f;
   } catch (...) {
     std::cout << "Bad temperature read" << std::endl;
     temperature_c = 0.0;
   }
+
   return temperature_c;
 }
 
@@ -85,7 +99,7 @@ float WeatherStation::GetPressure() {
     std::cout << "Bad pressure read" << std::endl;
     abs_pressure = 0;
   }
-  float temperature = this->GetTemperature();
+  float temperature = this->GetTemperature(BMP280);
   float rel_pressure = this->ConvertToRelativePressure(
       abs_pressure, station_altitude_, temperature);
   return rel_pressure;

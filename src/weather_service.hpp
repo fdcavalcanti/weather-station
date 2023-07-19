@@ -11,6 +11,8 @@
 #include "observer.hpp"
 #include "subject.hpp"
 
+enum Sensor {DHT22, BMP280};
+
 class WeatherStation : public Subject {
  public:
   explicit WeatherStation(float station_altitude);
@@ -19,7 +21,7 @@ class WeatherStation : public Subject {
   void RemoveObserver(Observer *observer) override;
   void NotifyObservers() override;
   void UpdateStation();
-  float GetTemperature();
+  float GetTemperature(Sensor sensor);
   float GetPressure();
   float GetHumidity();
  private:
@@ -31,12 +33,14 @@ class WeatherStation : public Subject {
   std::string bmp280_device = "iio:device1";
   std::string dht22_device = "iio:device0";
   #endif
-  const std::filesystem::path iio_temperature_ = iio_path_ / bmp280_device / "in_temp_input";
+  const std::filesystem::path iio_temperature_bmp280_ = iio_path_ / bmp280_device / "in_temp_input";
+  const std::filesystem::path iio_temperature_dht22_ = iio_path_ / dht22_device / "in_temp_input";
   const std::filesystem::path iio_pressure_ = iio_path_ / bmp280_device / "in_pressure_input";
   const std::filesystem::path iio_humidity_ = iio_path_ / dht22_device / "in_humidityrelative_input";
   std::vector<Observer*> observers_;
   float station_altitude_;
-  float temperature_;
+  float temperature_bmp280_;
+  float temperature_dht22_;
   float humidity_;
   float pressure_;
   float ConvertToRelativePressure(float pressure, float altitude,

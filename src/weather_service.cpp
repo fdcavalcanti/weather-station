@@ -48,7 +48,10 @@ std::string WeatherStation::ReadLineFromFile(const char *filename) {
 void WeatherStation::UpdateStation() {
   temperature_ = this->GetTemperature();
   pressure_ = this->GetPressure();
-  humidity_ = 0.0;
+  float humidity = this->GetHumidity();
+  /* This check is necessary due to bad sensor returns. */
+  if (static_cast<int>(humidity) != 0)
+    humidity_ = humidity;
   this->NotifyObservers();
 }
 
@@ -86,4 +89,16 @@ float WeatherStation::GetPressure() {
   float rel_pressure = this->ConvertToRelativePressure(
       abs_pressure, station_altitude_, temperature);
   return rel_pressure;
+}
+
+float WeatherStation::GetHumidity() {
+  std::string raw_humidity = this->ReadLineFromFile(iio_humidity_.c_str());
+  float rel_humidity;
+  try {
+    rel_humidity = std::stof(raw_humidity) / 1000;
+  } catch (...) {
+    std::cout << "Bad humidity read" << std::endl;
+    rel_humidity = 0;
+  }
+  return rel_humidity;
 }

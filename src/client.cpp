@@ -20,6 +20,8 @@ std::string Client::Display() {
   std::cout << client_name_ << ": " << temperature_ << ", " << pressure_
             << std::endl;
   std::string ret =
-      std::to_string(temperature_) + ", " + std::to_string(pressure_);
+      std::to_string(temperature_) + ", " +
+      std::to_string(pressure_) + ", " +
+      std::to_string(humidity_);
   return ret;
 }

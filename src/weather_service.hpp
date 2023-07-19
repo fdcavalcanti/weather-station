@@ -21,6 +21,7 @@ class WeatherStation : public Subject {
   void UpdateStation();
   float GetTemperature();
   float GetPressure();
+  float GetHumidity();
  private:
   const std::filesystem::path iio_path_ = "/sys/bus/iio/devices/";
   #ifdef BMP280_DEVICE_0
@@ -32,6 +33,7 @@ class WeatherStation : public Subject {
   #endif
   const std::filesystem::path iio_temperature_ = iio_path_ / bmp280_device / "in_temp_input";
   const std::filesystem::path iio_pressure_ = iio_path_ / bmp280_device / "in_pressure_input";
+  const std::filesystem::path iio_humidity_ = iio_path_ / dht22_device / "in_humidityrelative_input";
   std::vector<Observer*> observers_;
   float station_altitude_;
   float temperature_;

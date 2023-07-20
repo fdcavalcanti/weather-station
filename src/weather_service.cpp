@@ -3,10 +3,6 @@
 
 WeatherStation::WeatherStation(float station_altitude) {
   station_altitude_ = station_altitude;
-  temperature_bmp280_ = 0.0;
-  temperature_dht22_ = 0.0;
-  humidity_ = 0.0;
-  pressure_ = 0.0;
   current_weather_data_ = {0};
   std::cout << "Weather Station initialized. Altitude: " << station_altitude_
             << " m" << std::endl;
@@ -30,7 +26,7 @@ void WeatherStation::RemoveObserver(Observer *observer) {
 void WeatherStation::NotifyObservers() {
   std::cout << "Notifying observers" << std::endl;
   for (Observer *obs : observers_) {
-    obs->update(temperature_bmp280_, humidity_, pressure_);
+    obs->Update(&current_weather_data_);
   }
 }
 
@@ -49,15 +45,15 @@ std::string WeatherStation::ReadLineFromFile(const char *filename) {
 
 void WeatherStation::UpdateStation() {
   float temperature_dht22 = this->GetTemperature(DHT22);
-  temperature_bmp280_ = this->GetTemperature(BMP280);
-  pressure_ = this->GetPressure();
   float humidity = this->GetHumidity();
+  current_weather_data_.temperature_bmp280 = this->GetTemperature(BMP280);
+  current_weather_data_.relative_pressure = this->GetPressure();
   /* This check is necessary due to bad sensor returns. */
   if (static_cast<int>(humidity) != 0)
-    humidity_ = humidity;
+    current_weather_data_.relative_humidity = humidity;
 
   if (static_cast<int>(temperature_dht22) != 0)
-    temperature_dht22_ = temperature_dht22;
+    current_weather_data_.temperature_dht22 = temperature_dht22;
 
   this->NotifyObservers();
 }

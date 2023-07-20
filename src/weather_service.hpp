@@ -8,17 +8,9 @@
 #include <vector>
 #include <algorithm>
 #include <filesystem>
+#include "common.hpp"
 #include "observer.hpp"
 #include "subject.hpp"
-
-enum Sensor {DHT22, BMP280};
-
-struct StationWeatherData {
-  float temperature_dht22;
-  float temperature_bmp280;
-  float relative_pressure;
-  float relative_humidity;
-};
 
 class WeatherStation : public Subject {
  public:
@@ -46,11 +38,7 @@ class WeatherStation : public Subject {
   const std::filesystem::path iio_humidity_ = iio_path_ / dht22_device / "in_humidityrelative_input";
   std::vector<Observer*> observers_;
   float station_altitude_;
-  float temperature_bmp280_;
-  float temperature_dht22_;
-  float humidity_;
-  float pressure_;
-  StationWeatherData current_weather_data_;
+  WeatherStationData current_weather_data_;
   float ConvertToRelativePressure(float pressure, float altitude,
                                   float temperature);
   std::string ReadLineFromFile(const char *filename);

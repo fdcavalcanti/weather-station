@@ -2,12 +2,14 @@
 #ifndef SRC_OBSERVER_HPP_
 #define SRC_OBSERVER_HPP_
 
+#include "common.hpp"
+
 class Observer {
  public:
   /*
    * Observer interface.
    */
-   virtual void update(float temperature, float humidity, float pressure) = 0;
+   virtual void Update(WeatherStationData* data) = 0;
    virtual ~Observer() = default;
 };
 

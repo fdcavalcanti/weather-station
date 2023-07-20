@@ -24,12 +24,12 @@ CLIENT = STATION_LIB.WrapperClient("Rasp", WEATHER_STATION)
 
 
 def read_station_data():
-    cbuffer = ctypes.create_string_buffer(30)
+    cbuffer = ctypes.create_string_buffer(50)
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     STATION_LIB.WrapperDisplayClient(CLIENT, cbuffer)
     data = cbuffer.value.decode().split(",")
-    meas = Measurement(timestamp, float(data[0]), float(data[1]), float(data[2]))
-    print(f"{meas.timestamp} -> Temperature: {meas.temperature} | Pressure: {meas.pressure} | Humidity: {meas.humidity}")
+    print(data)
+    meas = Measurement(timestamp, float(data[0]), float(data[1]), float(data[2]), float(data[3]))
     return meas
 
 
@@ -42,4 +42,4 @@ if __name__ == "__main__":
         STATION_LIB.WrapperUpdateStation(WEATHER_STATION)
         meas = read_station_data()
         add_reading_to_database(DB_PATH, meas)
-        time.sleep(10)
+        time.sleep(SAMPLE_INTERVAL_S)

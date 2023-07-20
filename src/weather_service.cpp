@@ -98,27 +98,43 @@ float WeatherStation::GetTemperature(Sensor sensor) {
 
 float WeatherStation::GetPressure() {
   std::string raw_pressure = this->ReadLineFromFile(iio_pressure_.c_str());
-  float abs_pressure;
+  float abs_pressure, temperature, rel_pressure;
+
   try {
     abs_pressure = std::stof(raw_pressure) * 10;
   } catch (...) {
     std::cout << "Bad pressure read" << std::endl;
-    abs_pressure = 0;
   }
-  float temperature = this->GetTemperature(BMP280);
-  float rel_pressure = this->ConvertToRelativePressure(
-      abs_pressure, station_altitude_, temperature);
+
+  temperature = this->GetTemperature(BMP280);
+  rel_pressure = this->ConvertToRelativePressure(abs_pressure,
+                                                 station_altitude_,
+                                                 temperature);
+
   return rel_pressure;
 }
 
 float WeatherStation::GetHumidity() {
-  std::string raw_humidity = this->ReadLineFromFile(iio_humidity_.c_str());
   float rel_humidity;
-  try {
-    rel_humidity = std::stof(raw_humidity) / 1000;
-  } catch (...) {
-    std::cout << "Bad humidity read" << std::endl;
-    rel_humidity = 0;
+  uint8_t max_retries = 3;
+  uint8_t retry = 0;
+  bool read_success = false;
+  std::string raw_humidity;
+
+  while ((retry < max_retries) & !read_success) {
+    raw_humidity = this->ReadLineFromFile(iio_humidity_.c_str());
+    try {
+      rel_humidity = std::stof(raw_humidity) / 1000;
+      read_success = true;
+    } catch (...) {
+      std::cout << "Bad humidity read" << std::endl;
+      read_success = false;
+      rel_humidity = 0;
+    }
+
+    usleep(1000);
+    retry++;
   }
+
   return rel_humidity;
 }

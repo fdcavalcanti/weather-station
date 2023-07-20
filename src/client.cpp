@@ -1,12 +1,6 @@
 // Filipe Cavalcanti 2023
 #include "client.hpp"
 
-// Client::Client(const char* name, WeatherStation* station) {
-//   // client_name_ = std::string(name);
-//   // station_ = station;
-//   // station_->RegisterObserver(this);
-// }
-
 Client::~Client() { station_->RemoveObserver(this); }
 
 void Client::Update(WeatherStationData* data) {

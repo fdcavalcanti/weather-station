@@ -20,5 +20,5 @@ void WrapperDeleteClient(Client* client) {
 
 void WrapperDisplayClient(Client* client, char* buffer) {
   std::string data = client->Display();
-  strncpy(buffer, data.c_str(), 30);
+  strncpy(buffer, data.c_str(), 50);
 }

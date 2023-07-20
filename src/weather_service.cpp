@@ -69,19 +69,28 @@ float WeatherStation::ConvertToRelativePressure(float pressure, float altitude,
 
 float WeatherStation::GetTemperature(Sensor sensor) {
   float temperature_c;
+  uint8_t max_retries = 3;
+  uint8_t retry = 0;
+  bool read_success = false;
   std::string raw_temp;
 
-  if (sensor == BMP280) {
-    raw_temp = this->ReadLineFromFile(iio_temperature_bmp280_.c_str());
-  } else {
-    raw_temp = this->ReadLineFromFile(iio_temperature_dht22_.c_str());
-  }
+  while ((retry < max_retries) & !read_success) {
+    if (sensor == BMP280) {
+      raw_temp = this->ReadLineFromFile(iio_temperature_bmp280_.c_str());
+    } else {
+      raw_temp = this->ReadLineFromFile(iio_temperature_dht22_.c_str());
+    }
 
-  try {
-    temperature_c = std::stof(raw_temp) / 1000.0f;
-  } catch (...) {
-    std::cout << "Bad temperature read" << std::endl;
-    temperature_c = 0.0;
+    try {
+      temperature_c = std::stof(raw_temp) / 1000.0f;
+      read_success = true;
+    } catch (...) {
+      std::cout << "Bad temperature read from Sensor " << sensor << std::endl;
+      read_success = false;
+      temperature_c = 0.0;
+    }
+    usleep(10000);
+    retry++;
   }
 
   return temperature_c;

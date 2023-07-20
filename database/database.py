@@ -8,7 +8,8 @@ import sqlite3
 class Measurement:
     """Measurement data."""
     timestamp: str
-    temperature: float
+    temperature_bmp280: float
+    temperature_dht22: float
     pressure: float
     humidity: float
 
@@ -53,10 +54,11 @@ def add_reading_to_database(database: os.PathLike, meas: Measurement) -> None:
         None
     """
     db = sqlite3.connect(database)
-    command = f"INSERT INTO weather_log (datetime,temperature,pressure,humidity) \
-    VALUES (?,?,?,?);"
+    command = f"INSERT INTO weather_log (datetime,temperature_bmp280,temperature_dht22,pressure,humidity) \
+    VALUES (?,?,?,?,?);"
     cur = db.cursor()
-    cur.execute(command, (meas.timestamp, meas.temperature, meas.pressure, meas.humidity))
+    cur.execute(command, (meas.timestamp, meas.temperature_bmp280,
+                          meas.temperature_dht22, meas.pressure, meas.humidity))
     db.commit()
     db.close()
 

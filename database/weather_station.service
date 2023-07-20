@@ -6,8 +6,8 @@ After=multi-user.target
 Type=simple
 Restart=always
 User=rasp
-WorkingDirectory=/home/rasp/weather-station/server
-ExecStart=/home/rasp/weather-station/server/start_station.sh
+WorkingDirectory=/home/rasp/weather-station
+ExecStart=python3 weather_service.py
 
 [Install]
 WantedBy=multi-user.target

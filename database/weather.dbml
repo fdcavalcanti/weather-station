@@ -4,7 +4,8 @@
 Table weather_log {
   measurement_id integer [primary key, increment]
   datetime timestamp 
-  temperature float
+  temperature_bmp280 float
+  temperature_dht22 float
   pressure float
   humidity float
 }

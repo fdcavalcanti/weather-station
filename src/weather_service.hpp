@@ -2,12 +2,15 @@
 #ifndef SRC_WEATHER_SERVICE_HPP_
 #define SRC_WEATHER_SERVICE_HPP_
 #include <iostream>
+#include <cstdint>
 #include <cmath>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <filesystem>
+
+#include <unistd.h>
 #include "common.hpp"
 #include "observer.hpp"
 #include "subject.hpp"

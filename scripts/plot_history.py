@@ -1,7 +1,8 @@
 import sqlite3
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, time
 from enum import Enum
 from dataclasses import dataclass, field
 
@@ -103,15 +104,18 @@ def plot_history(data: list):
 
 class PlotWeatherStation:
     """Plots weather station data on the same time period."""
+    nighttime = time(18,0,0)
+    daytime = time(6,0,0)
+
     def __init__(self):
-        self.fig, self.ax = plt.subplots(nrows=3)
+        self.fig, self.ax = plt.subplots(nrows=3, sharex=True)
         self.measurement_list = []
     
     def add_measurement(self, meas_data: Measurement):
         self.measurement_list.append(meas_data)
 
     def refresh_plot(self):
-        for idx, data in enumerate(self.measurement_list):
+        for data in self.measurement_list:
             if data.meas_type in (MeasurementType.TEMPERATURE_BMP280, MeasurementType.TEMPERATURE_DHT22):
                 axis = 0
             if data.meas_type == MeasurementType.ATM_PRESSURE:
@@ -123,7 +127,31 @@ class PlotWeatherStation:
                                data.measurement,
                                label=data.meas_type.value)
             self.ax[axis].legend()
+        
+    def show(self):
         plt.show()
+
+    def add_night_day_contour(self):
+        datetime = self.measurement_list[0].date_time
+        for idx, dt in enumerate(datetime):
+            dttime = dt.time()
+            # Day
+            if dttime > self.daytime and dttime < self.nighttime:
+                if idx < len(datetime) - 1:
+                    for axis in range(3):
+                        self.ax[axis].axvspan(dt, datetime[idx+1], color="lightyellow", alpha=0.3)
+            # Night
+            if dttime > self.nighttime or dttime < self.daytime:
+                for axis in range(3):
+                    self.ax[axis].axvspan(dt, datetime[idx+1], color="lightblue", alpha=0.3)
+
+        yellow_patch = mpatches.Patch(color="lightyellow", label="Day time")
+        blue_patch = mpatches.Patch(color="lightblue", label="Night time")
+        for axis in range(3):
+            handles, labels = self.ax[axis].get_legend_handles_labels()
+            handles.append(yellow_patch)
+            handles.append(blue_patch)
+            self.ax[axis].legend(handles=handles)
 
 if __name__ == "__main__":
     print(f"Database path: {DB_PATH}")
@@ -137,3 +165,5 @@ if __name__ == "__main__":
     plot_tool.add_measurement(humi)
     plot_tool.add_measurement(press)
     plot_tool.refresh_plot()
+    plot_tool.add_night_day_contour()
+    plot_tool.show()

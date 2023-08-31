@@ -129,8 +129,8 @@ class WeatherStationDB:
                     SELECT {columns}
                     FROM weather_log
                     WHERE {MeasurementType.DATE_TIME.value}
-                    BETWEEN date({self.start_date})
-                    AND date({self.end_date})
+                    BETWEEN '{self.start_date}'
+                    AND '{self.end_date}'
                     """
         print(f"Query: {query_cmd}")
         cursor.execute(query_cmd)

@@ -1,12 +1,33 @@
+import argparse
 import sqlite3
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import os
+import sys
 from pathlib import Path
 from datetime import datetime, time
 from enum import Enum
 from dataclasses import dataclass, field
 
-DB_PATH = Path(__file__).parents[1] / "database" / "station.db"
+
+parser = argparse.ArgumentParser(description="Visualize weather station data")
+parser.add_argument("--start",
+                    action="store",
+                    default=None,
+                    required=False,
+                    type=str,
+                    help="Start date to query in format: YYYY-MM-DD")
+parser.add_argument("--end",
+                    action="store",
+                    default=None,
+                    required=False,
+                    type=str,
+                    help="Final date to query in format: YYYY-MM-DD")
+parser.add_argument("--db",
+                    action="store",
+                    required=False,
+                    default=Path(__file__).parents[1] / "database" / "station.db",
+                    help="Path to database file")
 
 
 class MeasurementType(Enum):
@@ -35,56 +56,87 @@ class Measurement:
         self.measurement = [item[1] for item in self.db_data[1:]]
 
 
-def get_columns_from_db(columns: tuple) -> list:
-    """Tuple containing column names to be retrieved."""
-    con = sqlite3.connect(DB_PATH)
-    cursor = con.cursor()
-    columns = ",".join(columns)
-    cursor.execute(f"SELECT {columns} FROM weather_log")
-    data = cursor.fetchall()
-    con.close()
-    return data
+class WeatherStationDB:
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self.start_date = "2023-01-01 00:00:00"
+        self.end_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    def read_temperature_dht22(self) -> list:
+        """Get all available temperature data from the DB."""
+        columns = (MeasurementType.DATE_TIME.value,
+                   MeasurementType.TEMPERATURE_DHT22.value)
+        data = self.__get_columns_from_db(columns)
+        data.insert(0, columns)
 
-def read_temperature_dht22_from_db() -> list:
-    """Get all available temperature data from the DB."""
-    columns = (MeasurementType.DATE_TIME.value,
-               MeasurementType.TEMPERATURE_DHT22.value)
-    data = get_columns_from_db(columns)
-    data.insert(0, columns)
+        return data
 
-    return data
+    def read_temperature_bmp280(self) -> list:
+        """Get all available temperature data from the DB."""
+        columns = (MeasurementType.DATE_TIME.value,
+                MeasurementType.TEMPERATURE_BMP280.value)
+        data = self.__get_columns_from_db(columns)
+        data.insert(0, columns)
 
+        return data
 
-def read_temperature_bmp280_from_db() -> list:
-    """Get all available temperature data from the DB."""
-    columns = (MeasurementType.DATE_TIME.value,
-               MeasurementType.TEMPERATURE_BMP280.value)
-    data = get_columns_from_db(columns)
-    data.insert(0, columns)
+    def read_pressure(self) -> list:
+        """Get all available atmospheric pressure values from the DB."""
+        columns = (MeasurementType.DATE_TIME.value,
+                MeasurementType.ATM_PRESSURE.value)
+        data = self.__get_columns_from_db(columns)
+        data.insert(0, columns)
 
-    return data
+        return data
 
+    def read_humidity(self) -> list:
+        """Get all available humidity values from the DB."""
+        columns = (MeasurementType.DATE_TIME.value,
+                MeasurementType.REL_HUMIDITY.value)
+        data = self.__get_columns_from_db(columns)
+        data.insert(0, columns)
 
-def read_pressure_from_db() -> list:
-    """Get all available atmospheric pressure values from the DB."""
-    columns = (MeasurementType.DATE_TIME.value,
-               MeasurementType.ATM_PRESSURE.value)
-    data = get_columns_from_db(columns)
-    data.insert(0, columns)
+        return data
 
-    return data
+    def set_start_date(self, date: str):
+        start_date = self.__validate_date_format(date)
+        self.start_date = self.__append_time(start_date)
 
+    def set_end_date(self, date: str):
+        end_date = self.__validate_date_format(date)
+        self.end_date = self.__append_time(end_date)
+        
 
-def read_humidity_from_db() -> list:
-    """Get all available humidity values from the DB."""
-    columns = (MeasurementType.DATE_TIME.value,
-               MeasurementType.REL_HUMIDITY.value)
-    data = get_columns_from_db(columns)
-    data.insert(0, columns)
+    def __append_time(self, date: str):
+        """Set time to 00:00:00"""
+        return date + " 00:00:01"
 
-    return data
+    def __validate_date_format(self, date):
+        try:
+            _ = datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid datetime format")
+            raise
+        return date
 
+    def __get_columns_from_db(self,
+                              columns: tuple) -> list:
+        """Tuple containing column names to be retrieved."""
+        con = sqlite3.connect(self.db_path)
+        cursor = con.cursor()
+        columns = ",".join(columns)
+        query_cmd = f"""
+                    SELECT {columns}
+                    FROM weather_log
+                    WHERE {MeasurementType.DATE_TIME.value}
+                    BETWEEN date({self.start_date})
+                    AND date({self.end_date})
+                    """
+        print(f"Query: {query_cmd}")
+        cursor.execute(query_cmd)
+        data = cursor.fetchall()
+        con.close()
+        return data
 
 def plot_history(data: list):
     columns = data[0]
@@ -154,16 +206,42 @@ class PlotWeatherStation:
             self.ax[axis].legend(handles=handles)
 
 if __name__ == "__main__":
-    print(f"Database path: {DB_PATH}")
-    temp_bmp = Measurement(read_temperature_bmp280_from_db())
-    temp_dht = Measurement(read_temperature_dht22_from_db())
-    humi = Measurement(read_humidity_from_db())
-    press = Measurement(read_pressure_from_db())
+    args = parser.parse_args()
+    print(f"Database path: {args.db}")
+
+    if args.start:
+        try:
+            datetime.strptime(args.start, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format!")
+            sys.exit(1)
+
+    if args.end:
+        try:
+            datetime.strptime(args.end, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format!")
+            sys.exit(1)
+
+    if not os.path.isfile(args.db):
+        print("Database file not found!")
+        sys.exit(1)
+
+    dbtool = WeatherStationDB(args.db)
+    if args.start:
+        dbtool.set_start_date(args.start)
+    if args.end:
+        dbtool.set_end_date(args.end)
+
+    temp_bmp = Measurement(dbtool.read_temperature_bmp280())
+    temp_dht = Measurement(dbtool.read_temperature_dht22())
+    humi = Measurement(dbtool.read_humidity())
+    press = Measurement(dbtool.read_pressure())
     plot_tool = PlotWeatherStation()
     plot_tool.add_measurement(temp_bmp)
     plot_tool.add_measurement(temp_dht)
     plot_tool.add_measurement(humi)
     plot_tool.add_measurement(press)
     plot_tool.refresh_plot()
-    plot_tool.add_night_day_contour()
+    # plot_tool.add_night_day_contour()
     plot_tool.show()

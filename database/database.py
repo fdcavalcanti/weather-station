@@ -64,10 +64,10 @@ def add_reading_to_database(database: os.PathLike, meas: Measurement) -> None:
 
 
 #if __name__ == "__main__":
-    #db_path = "/home/rasp/weather-station/database/station.db"
-    #try:
-    #    db_path = create_database("/home/rasp/weather-station/database/db_schema.sqlite", "station")
-    #except FileExistsError:
-    #    pass
+#    db_path = "/home/rasp/weather-station/database/station.db"
+#    try:
+#        db_path = create_database("/home/rasp/weather-station/database/db_schema.sqlite", "station")
+#    except FileExistsError:
+#        pass
     #aaa = Measurement("12342003030", 29.5, 1009.3, 70.1)
     #add_reading_to_database(db_path, aaa)

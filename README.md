@@ -34,15 +34,22 @@ Client 1: 27.480000, 25.700001, 1021.810303, 53.099998
 27.480000, 25.700001, 1021.810303, 53.099998
 ```
 
+Alternatively, you can run the Python script which does the same thing but uses a wrapper to access the station shared object:
+```
+$ python3 weather_service.py
+```
+
+This script runs a data acquisition every 15 minutes but can be easily configurable.
+
 # Enable the service
 Add the file `weather-station/service/weather_station.service` to RaspberryPi's systemd.
 This service will read all available station data and save to the database in 15 minute intervals.
 
 # Plotting from database
-Plotting from database can be simply executed by running the `weather-station/scripts/plot_history.py` script.
+Plotting from database can be simply executed by running the `weather-station/scripts/plot_history.py` script. A sample database file with over a month of data acquisition is available in the database directory.
 To plot from a specific date, just pass the database path and the desired dates:
 - Plot everything from 10/09/2023 until now:
 
-`$ python3 plot_history.py --db ~/weather-station/database/station.db --start 2023-09-10`
+`$ python3 plot_history.py --db ~/weather-station/database/station_data_sample.db --start 2023-09-10`
 
 ![](./plot_db_hist.png)

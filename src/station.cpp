@@ -1,4 +1,4 @@
-#include "weather_service.hpp"
+#include "station.hpp"
 #define LOCAL_ALTITUDE 685  // Location height relative to sea level
 
 WeatherStation::WeatherStation(float station_altitude) {

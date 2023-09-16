@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "weather_service.hpp"
+#include "station.hpp"
 
 class Client : public Observer {
  public:

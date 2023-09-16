@@ -1,7 +1,7 @@
 // Filipe Cavalcanti 2023
 // #include "src/weather_service.hpp"
 #include <iostream>
-#include "src/wrapper.h"
+#include "wrapper.h"
 
 int main() {
   // WeatherStation *ws = new WeatherStation(685);

@@ -138,21 +138,6 @@ class WeatherStationDB:
         con.close()
         return data
 
-def plot_history(data: list):
-    columns = data[0]
-    number_of_measurements = len(columns) - 1
-    datetime_list = [datetime.strptime(item[0], "%Y-%m-%d %H:%M:%S") for item in data[1:]]
-    column_data = []
-    for idx in range(1, number_of_measurements + 1):
-        meas = [item[idx] for item in data[1:]]
-        column_data.append(meas)
-
-    fig, ax = plt.subplots()
-    for idx, sensor_data in enumerate(column_data):
-        ax.plot(datetime_list, sensor_data, label=columns[idx+1])
-        ax.legend()
-    plt.show()
-
 
 class PlotWeatherStation:
     """Plots weather station data on the same time period."""
@@ -179,6 +164,7 @@ class PlotWeatherStation:
                                data.measurement,
                                label=data.meas_type.value)
             self.ax[axis].legend()
+            self.ax[axis].grid(True)
         
     def show(self):
         plt.show()

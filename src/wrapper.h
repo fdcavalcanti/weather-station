@@ -4,7 +4,7 @@
 
 #ifdef __cplusplus
 #include "client.hpp"
-#include "weather_service.hpp"
+#include "station.hpp"
 extern "C" {
 #endif
 

@@ -34,3 +34,5 @@
 build/
 venv/
 __pycache__
+*.db
+!station_data_sample.db

@@ -1,0 +1,14 @@
+[Unit]
+Description=Weather Station service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+User=rasp
+WorkingDirectory=/home/rasp/weather-station
+ExecStart=python3 weather_service.py
+
+[Install]
+WantedBy=multi-user.target
+

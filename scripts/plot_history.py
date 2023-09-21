@@ -63,46 +63,72 @@ class WeatherStationDB:
         self.end_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def read_temperature_dht22(self) -> list:
-        """Get all available temperature data from the DB."""
+        """Get all available temperature data from the DB.
+        
+        Returns:
+            Measurement: dataclass with DHT22 temperature data.    
+        """
         columns = (MeasurementType.DATE_TIME.value,
                    MeasurementType.TEMPERATURE_DHT22.value)
         data = self.__get_columns_from_db(columns)
         data.insert(0, columns)
 
-        return data
+        return Measurement(data)
 
     def read_temperature_bmp280(self) -> list:
-        """Get all available temperature data from the DB."""
+        """Get all available temperature data from the DB.
+
+        Returns:
+            Measurement: dataclass with BMP280 temperature data.    
+        """
         columns = (MeasurementType.DATE_TIME.value,
                 MeasurementType.TEMPERATURE_BMP280.value)
         data = self.__get_columns_from_db(columns)
         data.insert(0, columns)
 
-        return data
+        return Measurement(data)
 
     def read_pressure(self) -> list:
-        """Get all available atmospheric pressure values from the DB."""
+        """Get all available atmospheric pressure values from the DB.
+
+        Returns:
+            Measurement: dataclass with BMP280 pressure data.    
+        """
         columns = (MeasurementType.DATE_TIME.value,
                 MeasurementType.ATM_PRESSURE.value)
         data = self.__get_columns_from_db(columns)
         data.insert(0, columns)
 
-        return data
+        return Measurement(data)
 
     def read_humidity(self) -> list:
-        """Get all available humidity values from the DB."""
+        """Get all available humidity values from the DB.
+
+        Returns:
+            Measurement: dataclass with DHT22 humidity data.    
+        """
         columns = (MeasurementType.DATE_TIME.value,
                 MeasurementType.REL_HUMIDITY.value)
         data = self.__get_columns_from_db(columns)
         data.insert(0, columns)
 
-        return data
+        return Measurement(data)
 
     def set_start_date(self, date: str):
+        """Set start date for query.
+
+        Args:
+            date (str): date in format YYYY-MM-DD.
+        """
         start_date = self.__validate_date_format(date)
         self.start_date = self.__append_time(start_date)
 
     def set_end_date(self, date: str):
+        """Set end date for query.
+
+        Args:
+            date (str): date in format YYYY-MM-DD.
+        """
         end_date = self.__validate_date_format(date)
         self.end_date = self.__append_time(end_date)
         
@@ -169,27 +195,6 @@ class PlotWeatherStation:
     def show(self):
         plt.show()
 
-    def add_night_day_contour(self):
-        datetime = self.measurement_list[0].date_time
-        for idx, dt in enumerate(datetime):
-            dttime = dt.time()
-            # Day
-            if dttime > self.daytime and dttime < self.nighttime:
-                if idx < len(datetime) - 1:
-                    for axis in range(3):
-                        self.ax[axis].axvspan(dt, datetime[idx+1], color="lightyellow", alpha=0.3)
-            # Night
-            if dttime > self.nighttime or dttime < self.daytime:
-                for axis in range(3):
-                    self.ax[axis].axvspan(dt, datetime[idx+1], color="lightblue", alpha=0.3)
-
-        yellow_patch = mpatches.Patch(color="lightyellow", label="Day time")
-        blue_patch = mpatches.Patch(color="lightblue", label="Night time")
-        for axis in range(3):
-            handles, labels = self.ax[axis].get_legend_handles_labels()
-            handles.append(yellow_patch)
-            handles.append(blue_patch)
-            self.ax[axis].legend(handles=handles)
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -215,19 +220,19 @@ if __name__ == "__main__":
 
     dbtool = WeatherStationDB(args.db)
     if args.start:
+        print(args.start)
         dbtool.set_start_date(args.start)
     if args.end:
         dbtool.set_end_date(args.end)
 
-    temp_bmp = Measurement(dbtool.read_temperature_bmp280())
-    temp_dht = Measurement(dbtool.read_temperature_dht22())
-    humi = Measurement(dbtool.read_humidity())
-    press = Measurement(dbtool.read_pressure())
+    temp_bmp = dbtool.read_temperature_bmp280()
+    temp_dht = dbtool.read_temperature_dht22()
+    humi = dbtool.read_humidity()
+    press = dbtool.read_pressure()
     plot_tool = PlotWeatherStation()
     plot_tool.add_measurement(temp_bmp)
     plot_tool.add_measurement(temp_dht)
     plot_tool.add_measurement(humi)
     plot_tool.add_measurement(press)
     plot_tool.refresh_plot()
-    # plot_tool.add_night_day_contour()
     plot_tool.show()

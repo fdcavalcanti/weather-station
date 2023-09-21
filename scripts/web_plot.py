@@ -10,7 +10,8 @@ from plot_history import WeatherStationDB, Measurement
 
 PLOT_DAYS_PREVIOUS = 2
 TIME_DELTA = timedelta(days = PLOT_DAYS_PREVIOUS)
-DATABASE_PATH = Path(__file__).parents[0] / "database" / "station.db"
+DATABASE_PATH = Path(__file__).parents[1] / "database" / "station.db"
+print(f"Database: {DATABASE_PATH}")
 
 app = Flask(__name__)
 
@@ -19,7 +20,8 @@ app = Flask(__name__)
 def show_plot():
     datetime_days_ago = datetime.now() - TIME_DELTA
     station_db = WeatherStationDB(DATABASE_PATH)
-    station_db.set_start_date(datetime.strptime(datetime_days_ago, "%Y-%m-%d"))
+    start_date = datetime.strftime(datetime_days_ago, "%Y-%m-%d")  
+    station_db.set_start_date(start_date)
 
     temp_bmp = Measurement(station_db.read_temperature_bmp280())
     temp_dht = Measurement(station_db.read_temperature_dht22())
@@ -33,7 +35,7 @@ def show_plot():
     ax[1].plot(humidity.date_time, humidity.measurement, label=humidity.meas_type.value)
     ax[2].plot(press.date_time, press.measurement, label=press.meas_type.value)
 
-    for idx in [1,2,3]:
+    for idx in [0,1,2]:
         ax[idx].legend()
         ax[idx].grid(True)
 

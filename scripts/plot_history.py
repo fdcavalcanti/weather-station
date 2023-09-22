@@ -4,7 +4,7 @@ from matplotlib.figure import Figure
 import os
 import sys
 from pathlib import Path
-from datetime import datetime, time
+from datetime import datetime
 from enum import Enum
 from dataclasses import dataclass, field
 
@@ -166,8 +166,6 @@ class WeatherStationDB:
 
 class PlotWeatherStation:
     """Plots weather station data on the same time period."""
-    nighttime = time(18,0,0)
-    daytime = time(6,0,0)
 
     def __init__(self):
         self.fig = Figure(figsize=(16,9))
@@ -191,7 +189,15 @@ class PlotWeatherStation:
                                label=data.meas_type.value)
             self.ax[axis].legend()
             self.ax[axis].grid(True)
-        
+
+        try:
+            first_sample = self.measurement_list[-1].date_time[0]
+            last_sample = self.measurement_list[0].date_time[-1]
+        except IndexError:
+            first_sample = "no_data"
+            last_sample = "no_data"
+        self.fig.suptitle(f"Weather Station period: {first_sample} to {last_sample}")
+
     def save_fig(self, name: str="station_plot.png"):
         self.fig.savefig(name)
         return name

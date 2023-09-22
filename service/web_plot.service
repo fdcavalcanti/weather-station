@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather Station web server
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+User=rasp
+WorkingDirectory=/home/rasp/weather-station/scripts
+ExecStart=flask --app web_plot run --host=0.0.0.0
+
+[Install]
+WantedBy=multi-user.target

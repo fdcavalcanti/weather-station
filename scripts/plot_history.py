@@ -1,7 +1,6 @@
 import argparse
 import sqlite3
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import os
 import sys
 from pathlib import Path
@@ -220,7 +219,6 @@ if __name__ == "__main__":
 
     dbtool = WeatherStationDB(args.db)
     if args.start:
-        print(args.start)
         dbtool.set_start_date(args.start)
     if args.end:
         dbtool.set_end_date(args.end)

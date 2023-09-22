@@ -170,7 +170,7 @@ class PlotWeatherStation:
     daytime = time(6,0,0)
 
     def __init__(self):
-        self.fig = Figure()
+        self.fig = Figure(figsize=(16,9))
         self.ax = self.fig.subplots(nrows=3, sharex=True)
         self.measurement_list = []
     
@@ -192,8 +192,9 @@ class PlotWeatherStation:
             self.ax[axis].legend()
             self.ax[axis].grid(True)
         
-    def save_fig(self):
-        self.fig.savefig("weather_station_plot.png")
+    def save_fig(self, name: str="station_plot.png"):
+        self.fig.savefig(name)
+        return name
 
 
 if __name__ == "__main__":

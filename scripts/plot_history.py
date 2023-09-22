@@ -1,6 +1,6 @@
 import argparse
 import sqlite3
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import os
 import sys
 from pathlib import Path
@@ -170,7 +170,8 @@ class PlotWeatherStation:
     daytime = time(6,0,0)
 
     def __init__(self):
-        self.fig, self.ax = plt.subplots(nrows=3, sharex=True)
+        self.fig = Figure()
+        self.ax = self.fig.subplots(nrows=3, sharex=True)
         self.measurement_list = []
     
     def add_measurement(self, meas_data: Measurement):
@@ -191,8 +192,8 @@ class PlotWeatherStation:
             self.ax[axis].legend()
             self.ax[axis].grid(True)
         
-    def show(self):
-        plt.show()
+    def save_fig(self):
+        self.fig.savefig("weather_station_plot.png")
 
 
 if __name__ == "__main__":
@@ -233,4 +234,4 @@ if __name__ == "__main__":
     plot_tool.add_measurement(humi)
     plot_tool.add_measurement(press)
     plot_tool.refresh_plot()
-    plot_tool.show()
+    plot_tool.save_fig()
